@@ -1,5 +1,5 @@
 'use strict';
-import validator from 'validator';
+
 
 const form = document.querySelector('form.feedback-form');
 let formData;
