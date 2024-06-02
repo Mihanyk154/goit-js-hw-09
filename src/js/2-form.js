@@ -1,37 +1,36 @@
 'use strict';
+const form = document.querySelector('.feedback-form');
+const formData = {
+    email: '',
+    message: '',
+};
 
+const LOCALSTORAGE_KEY = 'feedback-form-state';
 
-const form = document.querySelector('form.feedback-form');
-let formData;
-try {
-    formData = JSON.parse(localStorage.getItem('feedback-form-state'));
-    formData.email = formData.email ?? '';
-    form.email.value = formData.email;
-    formData.message = formData.message ?? '';
-    form.message.value = formData.message;
-} catch (e) {
-    localStorage.removeItem('feedback-form-state');
-    formData = { email: '', message: '' };
-}
+form.addEventListener('input', event => {
+    formData[event.target.name] = event.target.value;
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(formData));
+});
 
-form.addEventListener('input', ({ target }) => {
-    formData[target.name] = target.value.trim();
-    localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+document.addEventListener('DOMContentLoaded', () => {
+    const savedData = localStorage.getItem(LOCALSTORAGE_KEY);
+    if (savedData) {
+        const { email, message } = JSON.parse(savedData);
+        form.email.value = email;
+        form.message.value = message;
+    }
 });
 
 form.addEventListener('submit', event => {
     event.preventDefault();
-    if (!validator.isEmail(formData.email)) {
-        alert('Email is incorrect');
+
+    if (!form.email.value || !form.message.value) {
+        alert('Fill please all fields');
         return;
     }
-    if (formData.email && formData.message) {
-        console.log(formData);
 
-        formData = { email: '', message: '' };
-        localStorage.removeItem('feedback-form-state');
-        form.reset();
-    } else {
-        alert('Fill please all fields');
-    }
+    console.log(formData);
+    localStorage.removeItem(LOCALSTORAGE_KEY);
+    form.reset();
 });
+
